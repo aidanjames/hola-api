@@ -12,9 +12,11 @@ from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, URL, Email
 from functools import wraps
 import uuid
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+Bootstrap(app)
 
 
 # CONNECT TO DB
@@ -73,6 +75,18 @@ def send_validation_email():
                                 msg=message)
 
 
+def valid_api_key(headers):
+    try:
+        key_from_header = headers['x-api-key']
+        keys = [cons.key for cons in db.session.query(Consumer).all()]
+        if key_from_header in keys:
+            return True
+        else:
+            return False
+    except KeyError:
+        return False
+
+
 @login_manager.user_loader
 def user_loader(user_id):
     return db.session.query(Consumer).get(user_id)
@@ -127,7 +141,7 @@ def register():
         new_consumer.email = form.email.data
         new_consumer.password = hashed_password
         new_consumer.requests_this_month = 0
-        new_consumer.key = uuid.uuid1()
+        new_consumer.key = str(uuid.uuid1())
         new_consumer.email_verified = False
 
         db.session.add(new_consumer)
@@ -157,6 +171,12 @@ def login():
     return render_template("login.html", form=form, current_user=current_user)
 
 
+@app.route('/delete-account')
+def delete_account():
+    # TODO Allow user to delete their API account
+    return redirect(url_for('home'))
+
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -164,7 +184,7 @@ def logout():
 
 
 @app.route("/verify")
-def contact():
+def verify_email():
     key = request.args.get('key')
     if current_user:
         user_api_key = current_user.key
@@ -191,11 +211,15 @@ def inject_now():
 # RESTful API routes
 @app.route("/random")
 def random():
-    my_dict = {
-        "es": "Hola",
-        "en": "Hello"
-    }
-    return jsonify(response=my_dict)
+    headers = request.headers
+    if valid_api_key(headers):
+        my_dict = {
+            "es": "Hola",
+            "en": "Hello"
+        }
+        return jsonify(response=my_dict)
+    else:
+        return "API Key not found", 403
 
 
 if __name__ == "__main__":
