@@ -45,7 +45,6 @@ class Consumer(UserMixin, db.Model):
 db.create_all()
 
 
-# TODO create a form to generate a new API user
 class CreateConsumerForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()], render_kw={"autofocus": True, "autocomplete": 'off'})
     password = PasswordField("Password", validators=[DataRequired()])
@@ -75,6 +74,7 @@ def send_validation_email():
                                 msg=message)
 
 
+# TODO Update last request and requests this month figure
 def valid_api_key(headers):
     try:
         key_from_header = headers['x-api-key']
