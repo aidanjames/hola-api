@@ -92,6 +92,16 @@ def user_loader(user_id):
     return db.session.query(Consumer).get(user_id)
 
 
+def logged_in(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if current_user.is_anonymous:
+            return abort(403)
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 def admin_only(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -106,7 +116,7 @@ def admin_only(f):
 
 @app.route('/')
 def home():
-    # TODO Create index.html with link to documentation and link to generate API key
+    # TODO Create index.html page
     return render_template('index.html')
 
 
@@ -116,11 +126,11 @@ def documentation():
     return render_template('documentation.html')
 
 
-@app.route('/api-key')
-def api_key():
-    # TODO create a page to show/generate API key
-    # TODO create api-key.html page
-    return render_template('api-key.html')
+@app.route('/account')
+@logged_in
+def account():
+    # TODO create account.html page
+    return render_template('account.html')
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -172,6 +182,7 @@ def login():
 
 
 @app.route('/delete-account')
+@logged_in
 def delete_account():
     # TODO Allow user to delete their API account
     return redirect(url_for('home'))
@@ -184,6 +195,7 @@ def logout():
 
 
 @app.route("/verify")
+@logged_in
 def verify_email():
     key = request.args.get('key')
     if current_user:
@@ -198,9 +210,8 @@ def verify_email():
 @app.route("/consumers")
 @admin_only
 def view_all_consumers():
-    # TODO Create consumers.html page
-    consumers = Consumer.query().all()
-    return render_template("consumers.html", conumers=consumers)
+    consumers = db.session.query(Consumer).all()
+    return render_template("consumers.html", consumers=consumers)
 
 
 @app.context_processor

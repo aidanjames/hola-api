@@ -1,0 +1,24 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+
+<div class="container form-container">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <p class="{{ category }}">{{ message }}</p>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <h1>Let's log you in.</h1>
+  {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+  <h6 class="register-link">New to hola? <a href="{{ url_for('register') }}">Register</a></h6>
+</div>
+
+{% endblock %}
+
+

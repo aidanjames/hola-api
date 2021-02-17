@@ -1,0 +1,43 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+
+<div class="container">
+  <h1>All consumers</h1>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th scope="col">Email</th>
+        <th scope="col">API key</th>
+        <th scope="col">Last request</th>
+        <th scope="col">Requests this month</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      {% for consumer in consumers %}
+
+      <tr>
+        <td>{{ consumer.email }}</td>
+        <td>{{ consumer.key }}</td>
+        <td>{{ consumer.last_request }}</td>
+        <td>{{ consumer.requests_this_month }}</td>
+      </tr>
+
+      {% endfor %}
+
+      </tbody>
+    </table>
+
+  </div>
+
+
+</div>
+
+{% endblock %}
+
+

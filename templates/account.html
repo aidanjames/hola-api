@@ -1,0 +1,35 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+
+<div class="container">
+  <h1>Your API key</h1>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th scope="col">API Key</th>
+        <th scope="col">Last request</th>
+        <th scope="col">Requests this month</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>{{ current_user.key }}</td>
+        <td>{{ current_user.last_request }}</td>
+        <td>{{ current_user.requests_this_month }}</td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+
+</div>
+
+{% endblock %}
+
+
