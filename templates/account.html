@@ -7,28 +7,41 @@
 <div class="container">
   <h1>Your API key</h1>
 
-  <div class="table-responsive">
     <table class="table table-bordered">
       <thead>
       <tr>
-        <th scope="col">API Key</th>
+        <th scope="col">
+          API Key
+          <a onclick="copyToClipboard()" class="fas fa-copy"></a>
+        </th>
         <th scope="col">Last request</th>
         <th scope="col">Requests this month</th>
       </tr>
       </thead>
       <tbody>
       <tr>
-        <td>{{ current_user.key }}</td>
+        <td id="api-key">{{ current_user.key }}</td>
         <td>{{ current_user.last_request }}</td>
         <td>{{ current_user.requests_this_month }}</td>
       </tr>
       </tbody>
     </table>
 
-  </div>
-
-
 </div>
+
+<script>
+  function copyToClipboard() {
+    var copyText = document.getElementById("api-key").innerHTML;
+    navigator.clipboard.writeText(copyText)
+    .then(() => {
+      console.log(copyText);
+    })
+    .catch(err => {
+      console.log('Something went wrong', err);
+    });
+  }
+</script>
+
 
 {% endblock %}
 
