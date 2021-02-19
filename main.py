@@ -13,14 +13,18 @@ from wtforms.validators import DataRequired, URL, Email
 from functools import wraps
 import uuid
 from flask_bootstrap import Bootstrap
+import flask_monitoringdashboard as dashboard
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 Bootstrap(app)
 
+dashboard.config.init_from(file='/config.cfg')
+dashboard.bind(app)
+
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///blog.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///hola.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
