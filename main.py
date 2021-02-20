@@ -181,7 +181,6 @@ def login():
         else:
             login_user(user)
             return redirect(url_for("home"))
-    # TODO Create login.html page
     return render_template("login.html", form=form, current_user=current_user)
 
 
@@ -189,6 +188,10 @@ def login():
 @logged_in
 def delete_account():
     # TODO Allow user to delete their API account
+    user_to_delete = current_user
+    logout_user()
+    db.session.delete(user_to_delete)
+    db.session.commit()
     return redirect(url_for('home'))
 
 
@@ -207,8 +210,7 @@ def verify_email():
         if key == user_api_key:
             # TODO create verified.html page
             return render_template("verified.html")
-    # TODO create error.html
-    return render_template('error.html')
+    return "Page not found", 404
 
 
 @app.route("/consumers")
