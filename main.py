@@ -1,15 +1,13 @@
 from flask import Flask, render_template, redirect, url_for, flash, abort, jsonify, request
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
-from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship
 import os
 import smtplib
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired, URL, Email
+from wtforms.validators import DataRequired, Email
 from functools import wraps
 import uuid
 from flask_bootstrap import Bootstrap
@@ -120,7 +118,6 @@ def admin_only(f):
 
 @app.route('/')
 def home():
-    # TODO Create index.html page
     return render_template('index.html')
 
 
@@ -133,7 +130,6 @@ def documentation():
 @app.route('/account')
 @logged_in
 def account():
-    # TODO create account.html page
     return render_template('account.html')
 
 
@@ -163,7 +159,6 @@ def register():
 
         login_user(new_consumer)
         return redirect(url_for("home"))
-    # TODO create register.html page
     return render_template("register.html", form=form, current_user=current_user)
 
 
