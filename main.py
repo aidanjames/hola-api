@@ -7,7 +7,7 @@ import smtplib
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired, Email
+from wtforms.validators import DataRequired, Email, EqualTo
 from functools import wraps
 import uuid
 from flask_bootstrap import Bootstrap
@@ -48,8 +48,12 @@ db.create_all()
 
 
 class CreateConsumerForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired(), Email()], render_kw={"autofocus": True, "autocomplete": 'off'})
-    password = PasswordField("Password", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email(), EqualTo('email2', message='Emails must match')],
+                        render_kw={"autofocus": True, "autocomplete": 'off'})
+    email2 = StringField("Repeat Email")
+    password = PasswordField("Password",
+                             validators=[DataRequired(), EqualTo('confirm', message='Passwords must match')])
+    confirm = PasswordField("Repeat Password")
     submit = SubmitField("Register")
 
 
