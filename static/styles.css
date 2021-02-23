@@ -10,6 +10,10 @@ a {
     color: #16c79a;
 }
 
+.copyright {
+    text-align: center;
+}
+
 .error {
     color: red;
     text-align: center;
