@@ -80,12 +80,18 @@ def send_validation_email():
                                 msg=message)
 
 
-# TODO Update last request and requests this month figure
 def valid_api_key(headers):
     try:
         key_from_header = headers['x-api-key']
-        keys = [cons.key for cons in db.session.query(Consumer).all()]
-        if key_from_header in keys:
+        consumer = Consumer.query.filter_by(key=key_from_header).first()
+        if consumer:
+            first_of_month = datetime.today().replace(day=1).date()
+            if consumer.last_request and consumer.last_request < first_of_month:
+                consumer.requests_this_month = 1
+            else:
+                consumer.requests_this_month = consumer.requests_this_month + 1
+            consumer.last_request = datetime.now()
+            db.session.commit()
             return True
         else:
             return False
