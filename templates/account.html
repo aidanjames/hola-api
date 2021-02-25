@@ -20,7 +20,11 @@
       </thead>
       <tbody>
       <tr>
+        {% if current_user.email_verified %}
         <td id="api-key">{{ current_user.key }}</td>
+        {% else %}
+        <td id="api-key"><a href="{{url_for('verify_email')}}">Verify email</a></td>
+        {% endif %}
         <td>{{ current_user.last_request }}</td>
         <td>{{ current_user.requests_this_month }}</td>
       </tr>

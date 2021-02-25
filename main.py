@@ -20,12 +20,10 @@ Bootstrap(app)
 dashboard.config.init_from(file='/config.cfg')
 dashboard.bind(app)
 
-
 # CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///hola.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
 
 # LOGIN MANAGER
 login_manager = LoginManager()
@@ -58,25 +56,25 @@ class CreateConsumerForm(FlaskForm):
 
 
 class LogInForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired(), Email()], render_kw={"autofocus": True, "autocomplete": 'off'})
+    email = StringField("Email", validators=[DataRequired(), Email()],
+                        render_kw={"autofocus": True, "autocomplete": 'off'})
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Log in")
 
 
 def send_validation_email():
-    # TODO Ensure user is signed in
     # TODO Generate a url for the verification
     # TODO Add email credentials to environment variables
     if current_user:
         message = f"Subject: Please validate your email\n\n" \
                   f"Hi! Thanks for signing up to use the Hola API.\n\n" \
                   f"Please validate your email address by clicking or copy/pasting the link below:\n\n" \
-                  f"http://tbc{current_user.key}"
+                  f"http://127.0.0.1:5000/verify?key={current_user.key}"
         with smtplib.SMTP(os.getenv("SMTP_SERVER")) as connection:
             connection.starttls()
             connection.login(user=os.getenv("MY_EMAIL"), password=os.getenv("EMAIL_PASSWORD"))
             connection.sendmail(from_addr=os.getenv("MY_EMAIL"),
-                                to_addrs=os.getenv("MY_EMAIL"),
+                                to_addrs=current_user.email,
                                 msg=message)
 
 
@@ -210,12 +208,16 @@ def logout():
 @logged_in
 def verify_email():
     key = request.args.get('key')
-    if current_user:
-        user_api_key = current_user.key
-        if key == user_api_key:
-            # TODO create verified.html page
-            return render_template("verified.html")
-    return "Page not found", 404
+    if key:
+        if current_user:
+            if key == current_user.key:
+                current_user.email_verified = True
+                db.session.commit()
+                return render_template("verified.html")
+        return "Page not found", 404
+    else:
+        send_validation_email()
+        return render_template("verify-email.html")
 
 
 @app.route("/consumers")
