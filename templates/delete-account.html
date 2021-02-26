@@ -1,0 +1,14 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends "base.html" %}
+{% block title %}Delete account{% endblock %}
+{% block content %}
+
+<div class="container form-container">
+  <h1>Are you sure?</h1>
+  <p>This will delete your account permanently. You will neet to re-register if you want to continue to use the API.</p>
+  <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">Just kidding</a>
+  <a href="{{ url_for('delete_account') }}" class="btn btn-primary">Delete account</a>
+</div>
+
+{% endblock %}

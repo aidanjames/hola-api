@@ -63,8 +63,6 @@ class LogInForm(FlaskForm):
 
 
 def send_validation_email():
-    # TODO Generate a url for the verification
-    # TODO Add email credentials to environment variables
     if current_user:
         message = f"Subject: Please validate your email\n\n" \
                   f"Hi! Thanks for signing up to use the Hola API.\n\n" \
@@ -79,6 +77,7 @@ def send_validation_email():
 
 
 def valid_api_key(headers):
+    # TODO Check if email is verified for user
     try:
         key_from_header = headers['x-api-key']
         consumer = Consumer.query.filter_by(key=key_from_header).first()
@@ -187,14 +186,19 @@ def login():
     return render_template("login.html", form=form, current_user=current_user)
 
 
+@app.route('/confirm-delete')
+@logged_in
+def confirm_delete():
+    return render_template('delete-account.html')
+
+
 @app.route('/delete-account')
 @logged_in
 def delete_account():
-    # TODO Allow user to delete their API account
     user_to_delete = current_user
-    logout_user()
     db.session.delete(user_to_delete)
     db.session.commit()
+    logout_user()
     return redirect(url_for('home'))
 
 
