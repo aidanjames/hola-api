@@ -77,11 +77,10 @@ def send_validation_email():
 
 
 def valid_api_key(headers):
-    # TODO Check if email is verified for user
     try:
         key_from_header = headers['x-api-key']
         consumer = Consumer.query.filter_by(key=key_from_header).first()
-        if consumer:
+        if consumer and consumer.email_verified:
             first_of_month = datetime.today().replace(day=1).date()
             if consumer.last_request and consumer.last_request < first_of_month:
                 consumer.requests_this_month = 1
