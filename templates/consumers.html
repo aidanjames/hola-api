@@ -15,17 +15,18 @@
         <th scope="col">API key</th>
         <th scope="col">Last request</th>
         <th scope="col">Requests this month</th>
+        <th scope="col">Email verified</th>
       </tr>
       </thead>
       <tbody>
 
       {% for consumer in consumers %}
-
       <tr>
         <td>{{ consumer.email }}</td>
         <td>{{ consumer.key }}</td>
         <td>{{ consumer.last_request }}</td>
         <td>{{ consumer.requests_this_month }}</td>
+        <td>{{ consumer.email_verified }}</td>
       </tr>
 
       {% endfor %}
