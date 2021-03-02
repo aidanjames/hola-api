@@ -12,6 +12,9 @@ from functools import wraps
 import uuid
 from flask_bootstrap import Bootstrap
 import flask_monitoringdashboard as dashboard
+from selenium_translation_manager import SeleniumTranslationManger
+from file_manager import FileManager
+from story_manager import StoryManager
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -248,6 +251,40 @@ def random():
     else:
         return "API Key not found", 403
 
+@app.route("/translate")
+def translate():
+    headers = request.headers
+    if valid_api_key(headers):
+        story = StoryManager().fetch_story()
+        story_title = story[0]
+        story_paragraphs = story[1]
+
+        translator = SeleniumTranslationManger()
+        print("********SPANISH*******")
+        print(story_title)
+        print("********ENGLISH*******")
+        print(translator.translate(text=story_title, title=story_title))
+        print("\n")
+
+        for paragraph in story_paragraphs:
+            print("********SPANISH*******")
+            print(paragraph)
+            print("********ENGLISH*******")
+            print(translator.translate(text=paragraph, title=story_title))
+            print("\n")
+
+        # Uncomment the following when using the selenium translation manager
+        translator.close_webdriver()
+
+        file_manager = FileManager()
+        print(file_manager.return_story(story_title))
+
+        return_value = {
+            "story-title": f"{story_title}"
+        }
+        return jsonify(response=return_value)
+    else:
+        return "API Key not found", 403
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
