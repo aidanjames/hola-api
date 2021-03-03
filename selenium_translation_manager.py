@@ -17,6 +17,7 @@ class SeleniumTranslationManger:
     def translate(self, text, title):
         existing_translation = self.file_manager.check_for_existing_translation(text, title)
         if existing_translation is not None:
+            print("we already have it!")
             return existing_translation
 
         self.initialise_webdriver()

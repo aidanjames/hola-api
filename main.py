@@ -255,6 +255,22 @@ def random():
 def translate():
     headers = request.headers
     if valid_api_key(headers):
+        translator = SeleniumTranslationManger()
+        es = request.args.get('es')
+        en = translator.translate(text=es, title="Words")
+        return_dict = {
+            "en": en,
+            "es": es
+        }
+        return jsonify(response=return_dict)
+    else:
+        return "API Key not found", 403
+
+
+@app.route("/story")
+def story():
+    headers = request.headers
+    if valid_api_key(headers):
         story = StoryManager().fetch_story()
         story_title = story[0]
         story_paragraphs = story[1]
