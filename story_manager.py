@@ -8,8 +8,8 @@ class StoryManager:
         self.titles = ["perro-aterrado"]
         self.base_url = "https://www.mundoprimaria.com/cuentos-infantiles-cortos/cuentos-populares/"
 
-    def fetch_story(self, story=""):
-        if story == "":
+    def fetch_story(self, story):
+        if story is None:
             story = self.titles[0]
         web_site_html = requests.get(self.base_url + story)
         soup = BeautifulSoup(web_site_html.text, "html.parser")

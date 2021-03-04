@@ -257,12 +257,15 @@ def translate():
     if valid_api_key(headers):
         translator = SeleniumTranslationManger()
         es = request.args.get('es')
-        en = translator.translate(text=es, title="Words")
-        return_dict = {
-            "en": en,
-            "es": es
-        }
-        return jsonify(response=return_dict)
+        if es:
+            en = translator.translate(text=es, title="Words")
+            return_dict = {
+                "en": en,
+                "es": es
+            }
+            return jsonify(response=return_dict)
+        else:
+            return "No text to translate", 400
     else:
         return "API Key not found", 403
 
@@ -270,10 +273,11 @@ def translate():
 @app.route("/story")
 def story():
     headers = request.headers
+    title = request.args.get('title')
     if valid_api_key(headers):
-        story = StoryManager().fetch_story()
-        story_title = story[0]
-        story_paragraphs = story[1]
+        my_story = StoryManager().fetch_story(story=title)
+        story_title = my_story[0]
+        story_paragraphs = my_story[1]
 
         translator = SeleniumTranslationManger()
         print("********SPANISH*******")
