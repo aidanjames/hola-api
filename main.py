@@ -45,6 +45,12 @@ class Consumer(UserMixin, db.Model):
     email_verified = db.Column(db.Boolean)
 
 
+class Words(db.Model):
+    __tablename__ = 'words'
+    es = db.Column(db.String(100), unique=True, primary_key=True)
+    en = db.Column(db.String(100))
+
+
 db.create_all()
 
 
@@ -251,6 +257,7 @@ def random():
     else:
         return "API Key not found", 403
 
+
 @app.route("/translate")
 def translate():
     headers = request.headers
@@ -280,16 +287,16 @@ def story():
         story_paragraphs = my_story[1]
 
         translator = SeleniumTranslationManger()
-        print("********SPANISH*******")
+        print("********ES*******")
         print(story_title)
-        print("********ENGLISH*******")
+        print("********EN*******")
         print(translator.translate(text=story_title, title=story_title))
         print("\n")
 
         for paragraph in story_paragraphs:
-            print("********SPANISH*******")
+            print("********ES*******")
             print(paragraph)
-            print("********ENGLISH*******")
+            print("********EN*******")
             print(translator.translate(text=paragraph, title=story_title))
             print("\n")
 
@@ -305,6 +312,7 @@ def story():
         return jsonify(response=return_value)
     else:
         return "API Key not found", 403
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
