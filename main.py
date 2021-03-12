@@ -300,7 +300,6 @@ def story():
             print(translator.translate(text=paragraph, title=story_title))
             print("\n")
 
-        # Uncomment the following when using the selenium translation manager
         translator.close_webdriver()
 
         file_manager = FileManager()
