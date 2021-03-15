@@ -260,10 +260,12 @@ def random():
 
 @app.route("/translate")
 def translate():
+    print("I'm in the translate function")
     headers = request.headers
     if valid_api_key(headers):
         translator = SeleniumTranslationManger()
         es = request.args.get('es')
+        print(f"The value to translate is {es}")
         if es:
             en = translator.translate(text=es, title="Words")
             return_dict = {
@@ -279,8 +281,10 @@ def translate():
 
 @app.route("/story")
 def story():
+    print("I'm in the story function")
     headers = request.headers
     title = request.args.get('title')
+    print(f"The title is {title}")
     if valid_api_key(headers):
         my_story = StoryManager().fetch_story(story=title)
         story_title = my_story[0]
