@@ -9,7 +9,10 @@ class SeleniumTranslationManger:
 
     def __init__(self):
         self.options = webdriver.ChromeOptions()
-        self.options.add_argument('headless')
+        self.options.binary_location = os.getenv("CHROME_BIN")
+        self.options.add_argument('--headless')
+        self.options.add_argument("--disable-dev-shm-usage")
+        self.options.add_argument("--no-sandbox")
         self.chrome_driver_path = os.getenv("CHROME_DRIVER_PATH")
         self.driver = None
         self.file_manager = FileManager()
