@@ -38,6 +38,7 @@ class SeleniumTranslationManger:
                 translated_text = self.driver.find_element_by_xpath(
                     '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[2]/div['
                     '5]/div/div[3]/div[1]/div/div[1]/div[1]/textarea').get_attribute("data-initial-value")
+                print(f"I've got a translation, which is... {translated_text}")
                 self.file_manager.save_new_translation((text, translated_text), title)
                 return translated_text
             except NoSuchElementException:
