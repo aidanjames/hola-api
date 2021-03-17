@@ -1,4 +1,3 @@
-import sqlite3
 from sqlalchemy import exc
 from flask import Flask, render_template, redirect, url_for, flash, abort, jsonify, request
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
@@ -114,10 +113,8 @@ def save_translation(es, en):
 
         db.session.add(new_word)
         db.session.commit()
-    except exc.IntegrityError as e1:
-        print(f"Failing because of {e1}")
-    # except sqlite3.IntegrityError as e:
-    #     print(f"{e} This didn't work probably because it already exists")
+    except exc.IntegrityError as e:
+        print(f"Error saving translation: {e}")
 
 
 @login_manager.user_loader
@@ -279,16 +276,20 @@ def translate():
     print("I'm in the translate function")
     headers = request.headers
 
-    # TODO Check if word exists in db
-
-    # TODO If doesn't exist, ask for translation and save
-
-
     if valid_api_key(headers):
-        translator = SeleniumTranslationManger()
         es = request.args.get('es')
+        existing_translation = db.session.query(Words).filter_by(es=es).first()
         print(f"The value to translate is {es}")
-        if es:
+        if existing_translation:
+            print("We've got an existing translation in the database so we'll return that...")
+            return_dict = {
+                "en": existing_translation.en,
+                "es": existing_translation.es
+            }
+            return jsonify(response=return_dict)
+        elif es:
+            print("We do not have an existing translation so we're gunna get one...")
+            translator = SeleniumTranslationManger()
             en = translator.translate(text=es, title="Words")
             save_translation(es=es, en=en)
             return_dict = {
