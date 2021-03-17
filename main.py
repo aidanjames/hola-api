@@ -273,7 +273,6 @@ def random():
 
 @app.route("/translate")
 def translate():
-    print("I'm in the translate function")
     headers = request.headers
 
     if valid_api_key(headers):
