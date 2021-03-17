@@ -18,6 +18,8 @@ class SeleniumTranslationManger:
         self.file_manager = FileManager()
 
     def translate(self, text, title):
+        # The below is only used where we are saving translations to file (rather than database)
+
         # existing_translation = self.file_manager.check_for_existing_translation(text, title)
         # if existing_translation is not None:
         #     print("we already have it!")
@@ -39,6 +41,9 @@ class SeleniumTranslationManger:
                     '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[2]/c-wiz/div[1]/div[2]/div[2]/c-wiz[2]/div['
                     '5]/div/div[3]/div[1]/div/div[1]/div[1]/textarea').get_attribute("data-initial-value")
                 print(f"I've got a translation, which is... {translated_text}")
+
+                # The below is only used where we are saving translations to file (rather than database)
+
                 # self.file_manager.save_new_translation((text, translated_text), title)
                 return translated_text
             except NoSuchElementException:
