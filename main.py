@@ -256,6 +256,13 @@ def view_all_consumers():
     return render_template("consumers.html", consumers=consumers)
 
 
+# TODO Add a page to allow bad translations to be edited manually
+@app.route('/edit-translations')
+@admin_only
+def edit_translations():
+    pass
+
+
 @app.context_processor
 def inject_now():
     return {'now': datetime.utcnow()}
