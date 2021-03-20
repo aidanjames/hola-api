@@ -256,11 +256,11 @@ def view_all_consumers():
     return render_template("consumers.html", consumers=consumers)
 
 
-# TODO Add a page to allow bad translations to be edited manually
-@app.route('/edit-translations')
+@app.route('/translations')
 @admin_only
-def edit_translations():
-    pass
+def translations():
+    words = db.session.query(Words)
+    return render_template('translations.html', translations=words)
 
 
 @app.context_processor

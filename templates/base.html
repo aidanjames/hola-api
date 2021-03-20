@@ -33,13 +33,14 @@
           <a class="nav-link nav-link-ajp" href="{{ url_for('documentation') }}">API Docs</a>
 
           {% if not current_user.is_anonymous %}
-          {% if current_user.id == 1 %}
-          <a class="nav-link nav-link-ajp" href="{{ url_for('view_all_consumers') }}">All consumers</a>
-          {% endif %}
-          <a class="nav-link nav-link-ajp" href="{{ url_for('account') }}">Account</a>
-          <a class="nav-link nav-link-ajp" href="{{ url_for('logout') }}">Log out</a>
+            {% if current_user.id == 1 %}
+              <a class="nav-link nav-link-ajp" href="{{ url_for('view_all_consumers') }}">All consumers</a>
+              <a class="nav-link nav-link-ajp" href="{{ url_for('translations') }}">All translations</a>
+            {% endif %}
+            <a class="nav-link nav-link-ajp" href="{{ url_for('account') }}">Account</a>
+            <a class="nav-link nav-link-ajp" href="{{ url_for('logout') }}">Log out</a>
           {% else %}
-          <a class="nav-link" href="{{ url_for('login') }}">Log in</a>
+            <a class="nav-link" href="{{ url_for('login') }}">Log in</a>
           {% endif %}
 
         </div>

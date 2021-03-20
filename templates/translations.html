@@ -1,0 +1,42 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends "base.html" %}
+{% block title %}Translations{% endblock %}
+{% block content %}
+
+<div class="container">
+  <h1>All translations</h1>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th scope="col">Spanish</th>
+        <th scope="col">English</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+
+      {% for translation in translations %}
+      <tr>
+        <td>{{ translation.es }}</td>
+        <td>{{ translation.en }}</td>
+        <td>Edit</td>
+        <td>Delete</td>
+      </tr>
+
+      {% endfor %}
+
+      </tbody>
+    </table>
+
+  </div>
+
+
+</div>
+
+{% endblock %}
+
+
