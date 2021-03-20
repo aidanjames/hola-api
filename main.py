@@ -8,7 +8,7 @@ import smtplib
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms.validators import DataRequired, Email, EqualTo, Length
 from functools import wraps
 import uuid
 from flask_bootstrap import Bootstrap
@@ -55,6 +55,7 @@ class Words(db.Model):
 # db.create_all()
 
 
+# --------- FORMS --------- #
 class CreateConsumerForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email(), EqualTo('email2', message='Emails must match')],
                         render_kw={"autofocus": True, "autocomplete": 'off'})
@@ -70,6 +71,12 @@ class LogInForm(FlaskForm):
                         render_kw={"autofocus": True, "autocomplete": 'off'})
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Log in")
+
+
+class EditTranslationForm(FlaskForm):
+    english = StringField("English translation", validators=[DataRequired(), Length(max=100, message="Max length 100")],
+                          render_kw={"autofocus": True, "autocomplete": 'off'})
+    submit = SubmitField("Save translation")
 
 
 def send_validation_email():
@@ -263,12 +270,40 @@ def translations():
     return render_template('translations.html', translations=words)
 
 
+@app.route('/delete-translation')
+@admin_only
+def delete_translation():
+    es = request.args.get('es')
+    translation_to_delete = db.session.query(Words).filter_by(es=es).first()
+    if translation_to_delete:
+        db.session.delete(translation_to_delete)
+        db.session.commit()
+        return redirect(url_for('translations'))
+    else:
+        return "Cannot delete word", 403
+
+
+@app.route('/edit-translation', methods=["GET", "POST"])
+@admin_only
+def edit_translation():
+    es = request.args.get('es')
+    translation_to_edit = Words.query.get(es)
+    form = EditTranslationForm(english=translation_to_edit.en)
+    if form.validate_on_submit():
+        translation_to_edit.en = form.english.data
+        db.session.commit()
+        return redirect(url_for('translations'))
+    else:
+        return render_template('edit-translation.html', spanish= translation_to_edit.es, form=form)
+
+
 @app.context_processor
 def inject_now():
     return {'now': datetime.utcnow()}
 
 
 # RESTful API routes
+# TODO delete the following as it is for quick testing only
 @app.route("/random")
 def random():
     headers = request.headers
