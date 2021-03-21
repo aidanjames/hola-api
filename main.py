@@ -98,7 +98,7 @@ def send_validation_email():
 def valid_api_key(headers):
     try:
         key_from_header = headers['x-api-key']
-        if key_from_header == '7348e23e-84f2-11eb-be24-4a8f76545a8e':
+        if key_from_header == os.getenv("ADMIN_KEY"):
             return True
         else:
             return False
