@@ -54,7 +54,7 @@ class Words(db.Model):
     en = db.Column(db.String(100))
 
 
-# db.create_all()
+db.create_all()
 
 
 # --------- FORMS --------- #
