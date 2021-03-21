@@ -24,8 +24,9 @@ class SeleniumTranslationManger:
         # if existing_translation is not None:
         #     print("we already have it!")
         #     return existing_translation
-
-        self.initialise_webdriver()
+        if not self.driver:
+            print("I'm initialising the web driver")
+            self.initialise_webdriver()
         self.driver.get(url=f"https://translate.google.com/?sl=es&tl=en&op=translate")
 
         original_text_element = self.driver.find_element_by_xpath(
@@ -56,5 +57,6 @@ class SeleniumTranslationManger:
 
     def close_webdriver(self):
         if self.driver is not None:
+            print("I'm de-initialising the web driver")
             self.driver.quit()
             self.driver = None

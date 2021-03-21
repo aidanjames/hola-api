@@ -33,6 +33,8 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+# TRANSLATION MANAGER
+translator = None
 
 # CONFIGURE TABLES
 class Consumer(UserMixin, db.Model):
@@ -319,6 +321,7 @@ def random():
 
 @app.route("/translate")
 def translate():
+    global translator
     headers = request.headers
 
     if valid_api_key(headers):
@@ -334,13 +337,16 @@ def translate():
             return jsonify(response=return_dict)
         elif es:
             print("We do not have an existing translation so we're gunna get one...")
-            translator = SeleniumTranslationManger()
+            if not translator:
+                translator = SeleniumTranslationManger()
             en = translator.translate(text=es, title="Words")
             save_translation(es=es, en=en)
             return_dict = {
                 "en": en,
                 "es": es
             }
+            translator.close_webdriver()
+            translator = None
             return jsonify(response=return_dict)
         else:
             return "No text to translate", 400
