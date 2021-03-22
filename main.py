@@ -265,11 +265,19 @@ def view_all_consumers():
     return render_template("consumers.html", consumers=consumers)
 
 
-@app.route('/translations')
+@app.route('/translations', methods=['GET', 'POST'])
 @admin_only
 def translations():
-    words = db.session.query(Words)
-    return render_template('translations.html', translations=words)
+    if request.method == 'POST':
+        search_text = request.form['text']
+        if search_text:
+            words = Words.query.filter(Words.es.contains(search_text))
+            return render_template('translations.html', translations=words)
+        else:
+            return render_template('translations.html')
+    else:
+        words = db.session.query(Words)
+        return render_template('translations.html', translations=words)
 
 
 @app.route('/delete-translation')
