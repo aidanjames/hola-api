@@ -1,4 +1,4 @@
-from sqlalchemy import exc
+from sqlalchemy import exc, or_
 from flask import Flask, render_template, redirect, url_for, flash, abort, jsonify, request
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -271,7 +271,8 @@ def translations():
     if request.method == 'POST':
         search_text = request.form['text']
         if search_text:
-            words = Words.query.filter(Words.es.contains(search_text))
+            words = Words.query.filter(or_(Words.es.contains(search_text),
+                                           Words.en.contains(search_text)))
             return render_template('translations.html', translations=words)
         else:
             return render_template('translations.html')
