@@ -1,4 +1,5 @@
 from sqlalchemy import exc, or_
+from sqlalchemy.orm import relationship
 from flask import Flask, render_template, redirect, url_for, flash, abort, jsonify, request
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -54,7 +55,40 @@ class Words(db.Model):
     en = db.Column(db.String(100))
 
 
+class Story(db.Model):
+    __tablename__ = 'stories'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), unique=True, nullable=True)
+
+    paragraphs = relationship('Paragraph', back_populates='story')
+
+
+class Paragraph(db.Model):
+    __tablename__ = 'paragraphs'
+    id = db.Column(db.Integer, primary_key=True)
+    es = db.Column(db.String(), unique=True, nullable=False)
+    en = db.Column(db.String(), unique=True, nullable=False)
+
+    story_id = db.Column(db.Integer, db.ForeignKey('stories.id'))
+    story = relationship('Story', back_populates='paragraphs')
+
+
 db.create_all()
+
+
+def create_temp_story():
+    existing_story = Story.query.get(1)
+    if not existing_story:
+        new_story = Story(title="Mi mejor amigo")
+        db.session.add(new_story)
+        new_paragraph = Paragraph(es="Me gusta viajar",
+                                  en="I like to travel",
+                                  story=new_story)
+        db.session.add(new_paragraph)
+        db.session.commit()
+
+
+create_temp_story()
 
 
 # --------- FORMS --------- #
