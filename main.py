@@ -73,22 +73,7 @@ class Paragraph(db.Model):
     story = relationship('Story', back_populates='paragraphs')
 
 
-db.create_all()
-
-
-def create_temp_story():
-    existing_story = Story.query.get(1)
-    if not existing_story:
-        new_story = Story(title="Mi mejor amigo")
-        db.session.add(new_story)
-        new_paragraph = Paragraph(es="Me gusta viajar",
-                                  en="I like to travel",
-                                  story=new_story)
-        db.session.add(new_paragraph)
-        db.session.commit()
-
-
-create_temp_story()
+# db.create_all()
 
 
 # --------- FORMS --------- #
@@ -340,6 +325,12 @@ def edit_translation():
         return redirect(url_for('translations'))
     else:
         return render_template('edit-translation.html', spanish= translation_to_edit.es, form=form)
+
+
+# TODO Add a page to allow admin to create new story (and add paragraphs)
+@admin_only
+def new_story():
+    pass
 
 
 @app.context_processor
