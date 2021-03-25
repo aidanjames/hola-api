@@ -324,12 +324,35 @@ def edit_translation():
         db.session.commit()
         return redirect(url_for('translations'))
     else:
-        return render_template('edit-translation.html', spanish= translation_to_edit.es, form=form)
+        return render_template('edit-translation.html', spanish=translation_to_edit.es, form=form)
 
 
 # TODO Add a page to allow admin to create new story (and add paragraphs)
+@app.route('/new-story', methods=['GET', 'POST'])
 @admin_only
 def new_story():
+    pass
+
+
+# TODO Add a page to allow admin to view all stories
+@app.route('/stories', methods=['GET', 'POST'])
+@admin_only
+def stories():
+    all_stories = Story.query.all()
+    return render_template('stories.html', stories=all_stories)
+
+
+# TODO Add a page to allow admin to edit a story
+@app.route('/edit-story', methods=['GET', 'POST'])
+@admin_only
+def edit_story():
+    pass
+
+
+# TODO Add a page to allow admin to delete a story
+@app.route('/delete-story', methods=['GET', 'POST'])
+@admin_only
+def delete_story():
     pass
 
 
