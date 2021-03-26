@@ -328,25 +328,29 @@ def edit_translation():
 
 
 # TODO Add a page to allow admin to create new story (and add paragraphs)
-@app.route('/new-story', methods=['GET', 'POST'])
+@app.route('/edit-story', methods=['GET', 'POST'])
 @admin_only
-def new_story():
-    pass
+def edit_story():
+    return render_template('edit-story.html')
 
 
 # TODO Add a page to allow admin to view all stories
 @app.route('/stories', methods=['GET', 'POST'])
 @admin_only
 def stories():
-    all_stories = Story.query.all()
-    return render_template('stories.html', stories=all_stories)
-
-
-# TODO Add a page to allow admin to edit a story
-@app.route('/edit-story', methods=['GET', 'POST'])
-@admin_only
-def edit_story():
-    pass
+    if request.method == 'POST':
+        search_text = request.form['text']
+        print(search_text)
+        if search_text:
+            titles = Story.query.filter(Story.title.contains(search_text)).all()
+            print(titles)
+            print(titles[0].title)
+            return render_template('stories.html', stories=titles)
+        else:
+            return render_template('stories.html')
+    else:
+        all_stories = Story.query.all()
+        return render_template('stories.html', stories=all_stories)
 
 
 # TODO Add a page to allow admin to delete a story
