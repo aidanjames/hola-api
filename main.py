@@ -73,7 +73,7 @@ class Paragraph(db.Model):
     story = relationship('Story', back_populates='paragraphs')
 
 
-# db.create_all()
+db.create_all()
 
 
 # --------- FORMS --------- #
