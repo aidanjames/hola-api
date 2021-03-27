@@ -7,21 +7,18 @@
 <div class="container">
   <h1>All stories</h1>
 
-<form class="input-group ajp-search" action="/stories" method="post">
-  <input type="search" name="text" class="form-control rounded" placeholder="Search" aria-label="Search"
-    aria-describedby="search-addon" />
-  <button type="submit" class="btn btn-primary">search</button>
-  <a href="{{ url_for('edit_story') }}">Add new</a>
-</form>
-
-
+  <form class="input-group ajp-search" action="/stories" method="post">
+    <input type="search" name="text" class="form-control rounded" placeholder="Search" aria-label="Search"
+           aria-describedby="search-addon"/>
+    <button type="submit" class="btn btn-primary">search</button>
+    <a href="{{ url_for('edit_title') }}">Add new</a>
+  </form>
 
   <div class="table-responsive">
     <table class="table table-bordered">
       <thead>
       <tr>
-        <th scope="col">Title (es)</th>
-        <th scope="col">Title (en)</th>
+        <th scope="col">Title</th>
         <th scope="col"></th>
         <th scope="col"></th>
       </tr>
@@ -31,7 +28,6 @@
       {% for story in stories %}
       <tr>
         <td>{{ story.title }}</td>
-        <td>TBC</td>
         <td><a href="{{ url_for('edit_story', id=story.id) }}">Edit</a></td>
         <td><a href="{{ url_for('delete_story', id=story.id) }}">Delete</a></td>
       </tr>

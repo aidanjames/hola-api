@@ -1,0 +1,23 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% extends "base.html" %}
+{% block title %}Edit paragraph{% endblock %}
+{% block content %}
+
+<div class="container form-container">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <p class="{{ category }}">{{ message }}</p>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <h1><em>Edit paragraph from "{{ story.title }}"</em></h1>
+  <br>
+  {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+  <h6 class="register-link">Second thoughts? <a href="{{ url_for('edit_story', id=story.id) }}">Cancel</a></h6>
+</div>
+
+{% endblock %}

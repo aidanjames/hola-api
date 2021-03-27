@@ -8,7 +8,7 @@ import os
 import smtplib
 from datetime import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from functools import wraps
 import uuid
@@ -98,6 +98,17 @@ class EditTranslationForm(FlaskForm):
     english = StringField("English translation", validators=[DataRequired(), Length(max=100, message="Max length 100")],
                           render_kw={"autofocus": True, "autocomplete": 'off'})
     submit = SubmitField("Save translation")
+
+
+class EditStoryForm(FlaskForm):
+    title = TextAreaField("Title", validators=[DataRequired()])
+    submit = SubmitField("Save new story")
+
+
+class EditParagraphForm(FlaskForm):
+    spanish = TextAreaField("Spanish", validators=[DataRequired()])
+    english = TextAreaField("English", validators=[DataRequired()])
+    submit = SubmitField("Save paragraph")
 
 
 def send_validation_email():
@@ -331,20 +342,46 @@ def edit_translation():
 @app.route('/edit-story', methods=['GET', 'POST'])
 @admin_only
 def edit_story():
-    return render_template('edit-story.html')
+    story_id = request.args.get('id')
+    if story_id:
+        story_to_edit = Story.query.get(story_id)
+        paragraphs = Paragraph.query.filter(Paragraph.story_id == story_id).all()
+        return render_template('edit-story.html', story=story_to_edit, paragraphs=paragraphs)
+    else:
+        return "Story not found", 404
 
 
-# TODO Add a page to allow admin to view all stories
+@app.route('/edit-title', methods=['GET', 'POST'])
+@admin_only
+def edit_title():
+    form = EditStoryForm()
+    story_id = request.args.get('id')
+    print(f"The story id is {story_id}")
+    if form.validate_on_submit():
+        if story_id:
+            story_to_edit = Story.query.get(story_id)
+            story_to_edit.title = form.title.data
+            db.session.commit()
+        else:
+            new_story = Story(title=form.title.data)
+            db.session.add(new_story)
+            db.session.commit()
+            story_id = new_story.id
+        return redirect(url_for('edit_story', id=story_id))
+    else:
+        if story_id:
+            story_to_edit = Story.query.get(story_id)
+            form.title.data = story_to_edit.title
+        return render_template('edit-title.html', form=form)
+
+
 @app.route('/stories', methods=['GET', 'POST'])
 @admin_only
 def stories():
     if request.method == 'POST':
         search_text = request.form['text']
-        print(search_text)
         if search_text:
             titles = Story.query.filter(Story.title.contains(search_text)).all()
-            print(titles)
-            print(titles[0].title)
             return render_template('stories.html', stories=titles)
         else:
             return render_template('stories.html')
@@ -353,11 +390,49 @@ def stories():
         return render_template('stories.html', stories=all_stories)
 
 
-# TODO Add a page to allow admin to delete a story
-@app.route('/delete-story', methods=['GET', 'POST'])
+@app.route('/delete-story')
 @admin_only
 def delete_story():
-    pass
+    story_id = request.args.get('id')
+    if story_id:
+        paragraphs = Paragraph.query.filter_by(story_id=story_id)
+        for paragraph in paragraphs:
+            db.session.delete(paragraph)
+        story_to_delete = Story.query.get(story_id)
+        db.session.delete(story_to_delete)
+        db.session.commit()
+        return redirect(url_for('stories'))
+    else:
+        return "Story not found", 404
+
+
+@app.route('/edit-paragraph', methods=['GET', 'POST'])
+@admin_only
+def edit_paragraph():
+    story_id = request.args.get('id')
+    if story_id:
+        current_story = Story.query.get(story_id)
+        paragraph_id = request.args.get('paragraph_id')
+        form = EditParagraphForm()
+        if form.validate_on_submit():
+            if paragraph_id:
+                paragraph_to_update = Paragraph.query.get(paragraph_id)
+                paragraph_to_update.es = form.spanish.data
+                paragraph_to_update.en = form.english.data
+            else:
+                new_paragraph = Paragraph(es=form.spanish.data, en=form.english.data, story_id=story_id)
+                db.session.add(new_paragraph)
+            db.session.commit()
+            return redirect(url_for('edit_story', id=story_id))
+        else:
+            if paragraph_id:
+                paragraph = Paragraph.query.get(paragraph_id)
+                form.spanish.data = paragraph.es
+                form.english.data = paragraph.en
+            return render_template('edit-paragraph.html', form=form, story=current_story)
+    else:
+        return "Story id not found", 404
+
 
 
 @app.context_processor
