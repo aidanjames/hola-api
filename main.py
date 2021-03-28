@@ -345,7 +345,7 @@ def edit_story():
     story_id = request.args.get('id')
     if story_id:
         story_to_edit = Story.query.get(story_id)
-        paragraphs = Paragraph.query.filter(Paragraph.story_id == story_id).all()
+        paragraphs = Paragraph.query.filter(Paragraph.story_id == story_id).order_by(Paragraph.id).all()
         return render_template('edit-story.html', story=story_to_edit, paragraphs=paragraphs)
     else:
         return "Story not found", 404
