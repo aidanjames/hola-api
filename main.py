@@ -27,7 +27,7 @@ dashboard.bind(app)
 
 # CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///hola.db")
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # LOGIN MANAGER
@@ -463,7 +463,6 @@ def translate():
     if valid_api_key(headers):
         es = request.args.get('es')
         existing_translation = db.session.query(Words).filter_by(es=es).first()
-        print(f"The value to translate is {es}")
         if existing_translation:
             print("We've got an existing translation in the database so we'll return that...")
             return_dict = {
@@ -492,40 +491,36 @@ def translate():
 
 @app.route("/story")
 def story():
-    print("I'm in the story function")
+    global translator
     headers = request.headers
     title = request.args.get('title')
-    print(f"The title is {title}")
     if valid_api_key(headers):
         my_story = StoryManager().fetch_story(story=title)
         story_title = my_story[0]
+        new_story = Story(title=story_title)
+        db.session.add(new_story)
+        db.session.commit()
+        story_id = new_story.id
         story_paragraphs = my_story[1]
+        if not translator:
+            translator = SeleniumTranslationManger()
 
-        translator = SeleniumTranslationManger()
-        print("********ES*******")
-        print(story_title)
-        print("********EN*******")
-        print(translator.translate(text=story_title, title=story_title))
-        print("\n")
+            for paragraph in story_paragraphs:
+                new_paragraph = Paragraph(es=paragraph, en=translator.translate(text=paragraph, title=story_title), story_id=story_id)
+                db.session.add(new_paragraph)
+                print("translating paragraph")
+            db.session.commit()
+            translator.close_webdriver()
 
-        for paragraph in story_paragraphs:
-            print("********ES*******")
-            print(paragraph)
-            print("********EN*******")
-            print(translator.translate(text=paragraph, title=story_title))
-            print("\n")
+            file_manager = FileManager()
+            print(file_manager.return_story(story_title))
 
-        translator.close_webdriver()
-
-        file_manager = FileManager()
-        print(file_manager.return_story(story_title))
-
-        return_value = {
-            "story-title": f"{story_title}"
-        }
-        return jsonify(response=return_value)
-    else:
-        return "API Key not found", 403
+            return_value = {
+                "story-title": f"{story_title}"
+            }
+            return jsonify(response=return_value)
+        else:
+            return "API Key not found", 403
 
 
 if __name__ == "__main__":
