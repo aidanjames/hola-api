@@ -523,5 +523,27 @@ def story():
             return "API Key not found", 403
 
 
+@app.route('/all-stories')
+def all_stories():
+    headers = request.headers
+
+    if valid_api_key(headers):
+        stories_to_return = []
+        stories_from_db = Story.query.all()
+
+        for title in stories_from_db:
+            stories_to_return.append({
+                "id": title.id,
+                "title": title.title
+            })
+
+        return_value = {
+            "stories": stories_to_return
+        }
+        return jsonify(response=return_value)
+    else:
+        return "API Key not found", 403
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
