@@ -356,7 +356,6 @@ def edit_story():
 def edit_title():
     form = EditStoryForm()
     story_id = request.args.get('id')
-    print(f"The story id is {story_id}")
     if form.validate_on_submit():
         if story_id:
             story_to_edit = Story.query.get(story_id)
@@ -539,6 +538,33 @@ def all_stories():
 
         return_value = {
             "stories": stories_to_return
+        }
+        return jsonify(response=return_value)
+    else:
+        return "API Key not found", 403
+
+
+@app.route('/fetch-story')
+def fetch_story():
+    headers = request.headers
+
+    if valid_api_key(headers):
+        story_id = request.args.get('id')
+        story_to_return = Story.query.get(story_id)
+        paragraphs = Paragraph.query.filter(Paragraph.story_id == story_to_return.id).order_by(Paragraph.id).all()
+        paragraphs_to_return = []
+
+        for paragraph in paragraphs:
+            paragraphs_to_return.append({
+                "id": paragraph.id,
+                "es": paragraph.es,
+                "en": paragraph.en
+            })
+
+        return_value = {
+            "story_id": story_to_return.id,
+            "story_title": story_to_return.title,
+            "paragraphs": paragraphs_to_return
         }
         return jsonify(response=return_value)
     else:
