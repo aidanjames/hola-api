@@ -132,18 +132,6 @@ def valid_api_key(headers):
             return True
         else:
             return False
-        # consumer = Consumer.query.filter_by(key=key_from_header).first()
-        # if consumer and (consumer.email_verified or consumer.id == 1):
-        #     first_of_month = datetime.today().replace(day=1).date()
-        #     if consumer.last_request and consumer.last_request < first_of_month:
-        #         consumer.requests_this_month = 1
-        #     else:
-        #         consumer.requests_this_month = consumer.requests_this_month + 1
-        #     consumer.last_request = datetime.now()
-        #     db.session.commit()
-        #     return True
-        # else:
-        #     return False
     except KeyError:
         return False
 
@@ -338,7 +326,6 @@ def edit_translation():
         return render_template('edit-translation.html', spanish=translation_to_edit.es, form=form)
 
 
-# TODO Add a page to allow admin to create new story (and add paragraphs)
 @app.route('/edit-story', methods=['GET', 'POST'])
 @admin_only
 def edit_story():
@@ -463,14 +450,12 @@ def translate():
         es = request.args.get('es')
         existing_translation = db.session.query(Words).filter_by(es=es).first()
         if existing_translation:
-            print("We've got an existing translation in the database so we'll return that...")
             return_dict = {
                 "en": existing_translation.en,
                 "es": existing_translation.es
             }
             return jsonify(response=return_dict)
         elif es:
-            print("We do not have an existing translation so we're gunna get one...")
             if not translator:
                 translator = SeleniumTranslationManger()
             en = translator.translate(text=es, title="Words")
